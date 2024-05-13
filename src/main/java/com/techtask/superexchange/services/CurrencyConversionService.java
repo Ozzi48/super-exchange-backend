@@ -62,10 +62,19 @@ public class CurrencyConversionService {
         if (sourceCurrency.isBlank() || targetCurrency.isBlank() || amount == null) {
             throw new InvalidCurrencyConversionInputException("Missing one or more mandatory input parameters");
         }
+
         List<ExchangeRatesDTO> exchangeRates = getAllExchangeRates();
+        List<String> availableCurrencies = getAllCurrencies();
+
+        if (!availableCurrencies.contains(sourceCurrency)) {
+            throw new InvalidCurrencyConversionInputException("Currency is not available: " + sourceCurrency);
+        }
+        if (!availableCurrencies.contains(targetCurrency)) {
+            throw new InvalidCurrencyConversionInputException("Currency is not available: " + targetCurrency);
+        }
+
         double fromRate = 1.0;
         double toRate = 1.0;
-
         if (!sourceCurrency.equals(BASE_FETCH_CURRENCY)) {
             for (ExchangeRatesDTO rate : exchangeRates) {
                 if (rate.getQuoteCurrency().equals(sourceCurrency)) {
